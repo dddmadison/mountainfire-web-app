@@ -4,7 +4,7 @@ import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 import joblib
-
+import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
@@ -45,6 +45,11 @@ model.compile(loss='mean_squared_error', optimizer='adam')
 history = model.fit(X_train_prepared, y_train, epochs=50,
                     validation_data=(X_valid_prepared, y_valid))
 
+# 여기 추가
+plt.plot(history.history['loss'], label='train_loss')
+plt.plot(history.history['val_loss'], label='val_loss')
+plt.legend()
+plt.show()
 # 🔹 7. 모델과 파이프라인 저장
 model.save('fires_model.keras')
 joblib.dump(full_pipeline, 'models/full_pipeline.pkl')
