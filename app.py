@@ -37,11 +37,9 @@ def lab():
     form = LabForm()
     if form.validate_on_submit():
         try:
-            # 모델과 전처리기 로드
             model = keras.models.load_model("fires_model.keras")
             pipeline = joblib.load("models/full_pipeline.pkl")
 
-            # 입력값 수집
             input_data = {
                 'eastsea': float(form.eastsea.data),
                 'westsea_anomaly': float(form.westsea_anomaly.data),
@@ -50,29 +48,39 @@ def lab():
                 'eastasia_anomaly': float(form.eastasia_anomaly.data),
                 'mungyeong_temp': float(form.mungyeong_temp.data)
             }
-            input_df = pd.DataFrame([input_data])
 
-            # 변환 및 예측
+            # 입력 데이터프레임 생성
+            input_df = pd.DataFrame([input_data])
+            print("✅ input_df 생성됨:")
+            print(input_df)
+
+            # 변환
             input_prepared = pipeline.transform(input_df)
+            print("✅ input_prepared (전처리 후):")
+            print(input_prepared)
+
+            # 예측
             prediction = model.predict(input_prepared)
+            print("✅ model.predict 결과:")
+            print(prediction)
 
             # NaN 체크
             if np.isnan(prediction[0][0]):
-                return render_template('result.html', prediction="예측할 수 없습니다.", soccer_fields=None)
+                print("❌ 예측값이 NaN입니다! 입력값 문제 or 모델 문제!")
+                return render_template('result.html', prediction="예측할 수 없습니다. 입력을 다시 확인해주세요.")
 
-            # 정상 예측
+            # 정상 출력
             pred_final = round(prediction[0][0], 2)
+            print("✅ 최종 예측 결과:", pred_final)
 
-            # 축구장 크기 환산 (축구장 1개 면적 = 0.714 ha)
-            soccer_fields = round(pred_final / 0.714, 2)
-
-            return render_template('result.html', prediction=pred_final, soccer_fields=soccer_fields)
+            return render_template('result.html', prediction=pred_final)
 
         except Exception as e:
-            print("❌ Error 발생:", e)
+            print("❌ 예외 발생:", e)
             return "입력값 에러! 다시 확인해주세요."
 
     return render_template('prediction.html', form=form)
+
 
 # 서버 시작
 if __name__ == '__main__':
