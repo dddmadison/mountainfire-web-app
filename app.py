@@ -118,9 +118,7 @@
 ############################여기는 까지 로컬용###############
 
 
-# 🔹 기본 라이브러리
-import tensorflow as tf
-# 🔹 라이브러리 임포트
+# 🔹 필요한 라이브러리
 import tensorflow as tf
 from tensorflow import keras
 import numpy as np
@@ -132,10 +130,6 @@ from flask_bootstrap import Bootstrap
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
-
-from sklearn.pipeline import Pipeline
-from sklearn.compose import ColumnTransformer
-from sklearn.preprocessing import StandardScaler, OneHotEncoder
 
 # 🔹 Flask 초기화
 app = Flask(__name__)
@@ -173,11 +167,11 @@ def lab():
             print("global_anomaly:", form.global_anomaly.data)
             print("mungyeong_temp:", form.mungyeong_temp.data)
 
-            # 모델과 파이프라인 로드 (⭐ 매 요청마다 불러옴)
+            # 🔥 모델과 파이프라인 로드
             model = keras.models.load_model("fires_model.keras")
             pipeline = joblib.load("models/full_pipeline.pkl")
 
-            # 입력 데이터 구성
+            # 🔥 입력 데이터 구성
             input_data = {
                 'eastsea': float(form.eastsea.data),
                 'westsea_anomaly': float(form.westsea_anomaly.data),
@@ -188,19 +182,23 @@ def lab():
                 'mungyeong_temp': float(form.mungyeong_temp.data)
             }
 
-            # 정확한 순서로 DataFrame 만들기
             input_df = pd.DataFrame([input_data], columns=[
-                'eastsea', 'westsea_anomaly', 'eastsea_anomaly', 'eastchina_anomaly', 'eastasia_anomaly', 'global_anomaly', 'mungyeong_temp'
+                'eastsea', 'westsea_anomaly', 'eastsea_anomaly',
+                'eastchina_anomaly', 'eastasia_anomaly',
+                'global_anomaly', 'mungyeong_temp'
             ])
 
             print("✅ input_df 생성 성공")
             print(input_df)
 
-            # 변환 및 예측
+            # 🔥 변환 및 예측
             input_prepared = pipeline.transform(input_df)
-            prediction = model.predict(input_prepared)
-            prediction = round(np.expm1(prediction[0][0]), 2)
-            return render_template('result.html', prediction=prediction)
+            pred_log = model.predict(input_prepared)
+            pred_final = round(np.expm1(pred_log[0][0]), 2)  # expm1로 복원
+
+            print("✅ 최종 예측 결과 (복원됨):", pred_final)
+
+            return render_template('result.html', prediction=pred_final)
 
         except Exception as e:
             print("❌ Error 발생:", e)
@@ -211,3 +209,4 @@ def lab():
 # 🔹 서버 시작
 if __name__ == '__main__':
     app.run()
+
