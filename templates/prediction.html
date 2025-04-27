@@ -3,21 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <title>산불 예측 입력</title>
-    {{ bootstrap.load_css() }}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
     <div class="container mt-5">
         <h2>🔥 산불 예측 입력</h2>
         <form method="POST">
             {{ form.hidden_tag() }}
-            <div class="form-group">{{ form.longitude.label }} {{ form.longitude(class="form-control") }}</div>
-            <div class="form-group">{{ form.latitude.label }} {{ form.latitude(class="form-control") }}</div>
-            <div class="form-group">{{ form.month.label }} {{ form.month(class="form-control") }}</div>
-            <div class="form-group">{{ form.day.label }} {{ form.day(class="form-control") }}</div>
-            <div class="form-group">{{ form.avg_temp.label }} {{ form.avg_temp(class="form-control") }}</div>
-            <div class="form-group">{{ form.max_temp.label }} {{ form.max_temp(class="form-control") }}</div>
-            <div class="form-group">{{ form.max_wind_speed.label }} {{ form.max_wind_speed(class="form-control") }}</div>
-            <div class="form-group">{{ form.avg_wind.label }} {{ form.avg_wind(class="form-control") }}</div>
+
+            <div class="form-group">{{ form.eastsea.label }} {{ form.eastsea(class="form-control") }}</div>
+            <div class="form-group">{{ form.westsea_anomaly.label }} {{ form.westsea_anomaly(class="form-control") }}</div>
+            <div class="form-group">{{ form.eastsea_anomaly.label }} {{ form.eastsea_anomaly(class="form-control") }}</div>
+            <div class="form-group">{{ form.eastchina_anomaly.label }} {{ form.eastchina_anomaly(class="form-control") }}</div>
+            <div class="form-group">{{ form.eastasia_anomaly.label }} {{ form.eastasia_anomaly(class="form-control") }}</div>
+            <div class="form-group">{{ form.global_anomaly.label }} {{ form.global_anomaly(class="form-control") }}</div>
+            <div class="form-group">{{ form.mungyeong_temp.label }} {{ form.mungyeong_temp(class="form-control") }}</div>
+
             <br>
             {{ form.submit(class="btn btn-primary") }}
         </form>
