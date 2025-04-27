@@ -49,38 +49,27 @@ def lab():
                 'mungyeong_temp': float(form.mungyeong_temp.data)
             }
 
-            # 입력 데이터프레임 생성
             input_df = pd.DataFrame([input_data])
-            print("✅ input_df 생성됨:")
-            print(input_df)
 
-            # 변환
+            # 데이터 변환 및 예측
             input_prepared = pipeline.transform(input_df)
-            print("✅ input_prepared (전처리 후):")
-            print(input_prepared)
+            pred_log = model.predict(input_prepared)
+            pred_final = np.expm1(pred_log[0][0])
 
-            # 예측
-            prediction = model.predict(input_prepared)
-            print("✅ model.predict 결과:")
-            print(prediction)
+            # nan 체크
+            if np.isnan(pred_final) or pred_final < 0:
+                return render_template('result.html', prediction=None)
 
-            # NaN 체크
-            if np.isnan(prediction[0][0]):
-                print("❌ 예측값이 NaN입니다! 입력값 문제 or 모델 문제!")
-                return render_template('result.html', prediction="예측할 수 없습니다. 입력을 다시 확인해주세요.")
+            # 축구장 크기 계산 (1축구장 ≈ 0.714ha)
+            soccer_fields = round(pred_final / 0.714, 2)
 
-            # 정상 출력
-            pred_final = round(prediction[0][0], 2)
-            print("✅ 최종 예측 결과:", pred_final)
-
-            return render_template('result.html', prediction=pred_final)
+            return render_template('result.html', prediction=round(pred_final, 2), soccer_fields=soccer_fields)
 
         except Exception as e:
-            print("❌ 예외 발생:", e)
+            print("❌ Error 발생:", e)
             return "입력값 에러! 다시 확인해주세요."
 
     return render_template('prediction.html', form=form)
-
 
 # 서버 시작
 if __name__ == '__main__':
