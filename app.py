@@ -198,8 +198,8 @@ def lab():
 
             # 변환 및 예측
             input_prepared = pipeline.transform(input_df)
-            prediction = round(model.predict(input_prepared)[0][0], 2)
-
+            prediction = model.predict(input_prepared)
+            prediction = round(np.expm1(prediction[0][0]), 2)
             return render_template('result.html', prediction=prediction)
 
         except Exception as e:
